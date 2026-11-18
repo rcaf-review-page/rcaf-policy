@@ -1,0 +1,284 @@
+---
+interface Task {
+  slug: string;
+  label: string;
+}
+
+interface Props {
+  title: string;
+  eyebrow: string;
+  description: string;
+  basePath: string;
+  tasks: Task[];
+  dataset?: string;
+}
+
+const { title, eyebrow, description, basePath, tasks, dataset } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL;
+const prefix = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+const asset = (path: string) => `${prefix}${path.replace(/^\/+/, "")}`;
+const source = (method: "maniflow" | "rcaf", slug: string, extension: "mp4" | "jpg") =>
+  asset(`${basePath}/${method}/${slug}.${extension}`);
+---
+
+<section class="benchmark full-bleed not-prose" aria-label={title}>
+  <div class="benchmark-shell">
+  <header class="benchmark-heading">
+    <div class="benchmark-meta">
+      <span class="eyebrow">{eyebrow}</span>
+      {dataset && <span class="dataset-badge">{dataset}</span>}
+    </div>
+    <h2>{title}</h2>
+    <p>{description}</p>
+    <div class="legend" aria-label="Method legend">
+      <span class="legend-item baseline-legend"><i></i>ManiFlow · 10 NFEs</span>
+      <span class="legend-item ours-legend"><i></i>RCAF (Ours) · 1 NFE</span>
+    </div>
+  </header>
+
+  <div class="task-grid">
+    {tasks.map((task, index) => (
+      <article class="task-card">
+        <header class="task-heading">
+          <span>{String(index + 1).padStart(2, "0")}</span>
+          <h3>{task.label}</h3>
+        </header>
+        <div class="pair-grid">
+          <figure>
+            <div class="method-label baseline-label">ManiFlow <span>10 NFEs</span></div>
+            <video
+              src={source("maniflow", task.slug, "mp4")}
+              poster={source("maniflow", task.slug, "jpg")}
+              controls
+              preload="metadata"
+              playsinline
+              aria-label={`${task.label}, ManiFlow, 10 NFEs`}
+            />
+          </figure>
+          <figure class="ours-figure">
+            <div class="method-label ours-label">RCAF <span>Ours · 1 NFE</span></div>
+            <video
+              src={source("rcaf", task.slug, "mp4")}
+              poster={source("rcaf", task.slug, "jpg")}
+              controls
+              preload="metadata"
+              playsinline
+              aria-label={`${task.label}, RCAF, 1 NFE`}
+            />
+          </figure>
+        </div>
+      </article>
+    ))}
+  </div>
+  </div>
+</section>
+
+<style>
+  .benchmark {
+    margin-block: 4rem;
+    color: var(--foreground);
+  }
+
+  .benchmark-shell {
+    width: min(86rem, calc(100% - 2rem));
+    margin-inline: auto;
+  }
+
+  .benchmark-heading {
+    max-width: 44rem;
+    margin: 0 auto 1.65rem;
+    text-align: center;
+  }
+
+  .eyebrow {
+    display: block;
+    color: #2563eb;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+  }
+
+  .benchmark-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+  }
+
+  .dataset-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.55rem;
+    padding: 0.24rem 0.55rem;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    color: #1d4ed8;
+    background: #eff6ff;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.67rem;
+    font-weight: 800;
+    letter-spacing: 0.025em;
+  }
+
+  .benchmark-heading h2 {
+    margin: 0.35rem 0 0.65rem;
+    font-size: clamp(1.6rem, 4vw, 2.05rem);
+    line-height: 1.18;
+  }
+
+  .benchmark-heading p {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.55rem;
+    margin-top: 1rem;
+  }
+
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.36rem 0.58rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--muted-foreground);
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+
+  .legend-item i {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: #94a3b8;
+  }
+
+  .ours-legend i {
+    background: #2563eb;
+  }
+
+  .task-grid {
+    display: grid;
+    gap: 1rem;
+    max-width: 80rem;
+    margin-inline: auto;
+  }
+
+  .task-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 0.9rem;
+    background: var(--card);
+    box-shadow: 0 10px 28px rgb(15 23 42 / 0.065);
+  }
+
+  .task-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.7rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, var(--muted) 70%, transparent);
+  }
+
+  .task-heading > span {
+    display: grid;
+    width: 1.65rem;
+    height: 1.65rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 0.45rem;
+    color: #475569;
+    background: color-mix(in srgb, var(--card) 82%, transparent);
+    font-size: 0.64rem;
+    font-weight: 850;
+  }
+
+  .task-heading h3 {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.25;
+  }
+
+  .pair-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .pair-grid figure {
+    min-width: 0;
+    margin: 0;
+    background: var(--card);
+  }
+
+  .method-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.35rem;
+    padding: 0.45rem 0.55rem;
+    color: #475569;
+    background: #f8fafc;
+    font-size: 0.68rem;
+    font-weight: 800;
+  }
+
+  .method-label span {
+    color: #94a3b8;
+    font-size: 0.58rem;
+    font-weight: 750;
+  }
+
+  .ours-label {
+    color: #1d4ed8;
+    background: #eff6ff;
+  }
+
+  .ours-label span {
+    color: #3b82f6;
+  }
+
+  .pair-grid video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    margin: 0;
+    background: #0f172a;
+    object-fit: contain;
+  }
+
+  @media (min-width: 72rem) {
+    .task-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 420px) {
+    .benchmark {
+      margin-block: 3rem;
+    }
+
+    .task-grid {
+      gap: 0.75rem;
+    }
+
+    .method-label {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.08rem;
+    }
+  }
+</style>

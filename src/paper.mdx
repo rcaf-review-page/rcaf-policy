@@ -1,0 +1,210 @@
+---
+title: "High-Fidelity One-Step Generative Visuomotor Policy via Recursive Correction, Frequency Consistency, and Contrastive Flow Matching"
+authors:
+  - name: Anonymous Author(s)
+conference: Anonymous supplementary material for review
+
+theme: device
+favicon: favicon.svg
+description: Anonymous supplementary material for a manuscript under review.
+thumbnail: screenshot-light.png
+anonymous: true
+---
+
+import HighlightedSection from "./components/HighlightedSection.astro";
+import Figure from "./components/Figure.astro";
+import Picture from "./components/Picture.astro";
+import TwoColumns from "./components/TwoColumns.astro";
+import ManuscriptLink from "./components/ManuscriptLink.astro";
+import RealRobotComparison from "./components/RealRobotComparison.astro";
+import PairedVideoBenchmark from "./components/PairedVideoBenchmark.astro";
+import ViewportVideoAutoplay from "./components/ViewportVideoAutoplay.astro";
+
+<ViewportVideoAutoplay />
+
+<Figure>
+  <img slot="figure" src="/rcaf-policy/image/motivation.jpg" alt="Challenges and diagnostic analyses of high-fidelity one-step visuomotor generation." className="w-full rounded-lg shadow-sm border border-gray-100" />
+  <Fragment slot="caption">**Figure 1. Challenges and diagnostic analyses of high-fidelity one-step visuomotor generation.** (a) Joint prediction errors under one-step generation. (b) A multimodal toy example showing invalid inter-mode trajectories in ManiFlow (1 NFE) and improved mode coverage with our method. (c) Cross-timestep spectral discrepancies along the same generation path, illustrating intra-flow structural consistency. (d) Joint prediction errors under visual changes and closed-loop success rates across different scene conditions. Further experimental details and analyses are provided in the Supplementary Material.</Fragment>
+</Figure>
+<br/>
+
+<HighlightedSection>
+
+## Abstract
+
+Generative models such as Diffusion and Flow Matching have significantly advanced robotic visuomotor policies by modeling complex and multimodal action distributions. However, their reliance on multi-step sampling introduces substantial inference latency. Existing one-step acceleration methods improve efficiency, but compressing the iterative generation process into a single long-span update may introduce flow-map approximation errors and impair multimodal action generation. Moreover, velocity predictions along the same generation path may exhibit spectral drift, while the learned velocity field may produce inaccurate action predictions under visual perturbations, further degrading the fidelity and reliability of one-step generation. To address these challenges, we propose a high-fidelity one-step generative visuomotor policy framework based on three complementary mechanisms: recursive correction, frequency consistency, and contrastive flow matching. First, **Recursive Consistent Action Flow (RCAF)** constructs corrected long-span velocity targets through recursive teacher estimation to reduce flow-map approximation errors while supporting multimodal action generation. Second, **Dual-Timestep Frequency Consistency (DTFC)** introduces timestep-aware spectral regularization to suppress intra-flow spectral drift and promote consistent temporal action structures. Third, **Contrastive Flow Matching (CFM)** introduces margin-bounded cross-sample velocity regularization to complement positive flow supervision and improve action prediction reliability. All three mechanisms operate during training without increasing one-step inference cost. Extensive experiments on RoboTwin 1.0, RoboTwin 2.0, Adroit, DexArt, ManiFeel, and real-world robot platforms show that our method achieves competitive or superior manipulation performance compared with strong 10-step generative policy baselines while requiring only one function evaluation (1 NFE). On RoboTwin 1.0, our method achieves an average success rate of 58.9% at 1 NFE, outperforming ManiFlow at 10 NFEs (46.1%).
+
+</HighlightedSection>
+
+<ManuscriptLink
+  href="/rcaf-policy/paper/rcaf_tnnls_anonymous.pdf"
+  label="Anonymous Manuscript PDF"
+/>
+
+<Figure>
+  <img slot="figure" src="/rcaf-policy/image/method.jpg" alt="Overview of the RCAF framework." className="w-full rounded-lg shadow-sm border border-gray-200" />
+  <Fragment slot="caption">**Figure 2. Overview of the proposed framework.** (a) The multimodal Diffusion Transformer (DiT) policy network architecture. (b) Recursive Consistent Action Flow (RCAF) for correcting long-span velocity targets through recursive teacher estimation and bounded residual correction. (c) Dual-Timestep Frequency Consistency (DTFC) for timestep-aware spectral regularization to suppress intra-flow spectral drift. (d) Contrastive Flow Matching (CFM) for margin-bounded cross-sample velocity regularization.</Fragment>
+</Figure>
+
+<br/>
+
+<RealRobotComparison />
+
+
+## Real-World Generalization Results
+
+### Task: Pick and Place
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <div className="flex flex-col">
+    <h4 className="text-center font-semibold text-gray-700 mb-2">DP · 100 NFEs</h4>
+    <video src="/rcaf-policy/videos/real_world/pick_place/dp_pick_and_place.mp4" controls preload="metadata" playsInline className="w-full rounded-lg shadow-sm border border-gray-200" />
+  </div>
+  <div className="flex flex-col">
+    <h4 className="text-center font-semibold text-gray-700 mb-2">π₀ (Pi0)</h4>
+    <video src="/rcaf-policy/videos/real_world/pick_place/pi0-pick_and_place.mp4" controls preload="metadata" playsInline className="w-full rounded-lg shadow-sm border border-gray-200" />
+  </div>
+  <div className="flex flex-col">
+    <h4 className="text-center font-bold text-blue-600 mb-2">RCAF (Ours) · 1 NFE</h4>
+    <video src="/rcaf-policy/videos/real_world/pick_place/ours_pick_and_place.mp4" controls preload="metadata" playsInline className="w-full rounded-lg shadow-lg border-2 border-blue-200" />
+  </div>
+</div>
+
+<br/>
+
+### Task: Grasping and Pouring Bottle
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div className="flex flex-col">
+    <h4 className="text-center font-semibold text-gray-700 mb-2">DP · 100 NFEs</h4>
+    <video src="/rcaf-policy/videos/real_world/pouring/DP.mp4" controls preload="metadata" playsInline className="w-full rounded-lg shadow-sm border border-gray-200" />
+  </div>
+  <div className="flex flex-col">
+    <h4 className="text-center font-bold text-blue-600 mb-2">RCAF (Ours) · 1 NFE</h4>
+    <video src="/rcaf-policy/videos/real_world/pouring/ours.mp4" controls preload="metadata" playsInline className="w-full rounded-lg shadow-lg border-2 border-blue-200" />
+  </div>
+</div>
+
+<br/>
+
+### Task: Dynamic Throwing
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div className="flex flex-col">
+    <h4 className="text-center font-semibold text-gray-700 mb-2">DP · 100 NFEs</h4>
+    <video src="/rcaf-policy/videos/real_world/throwing/DP.mp4" controls preload="metadata" playsInline className="w-full rounded-lg shadow-sm border border-gray-200" />
+  </div>
+  <div className="flex flex-col">
+    <h4 className="text-center font-bold text-blue-600 mb-2">RCAF (Ours) · 1 NFE</h4>
+    <video src="/rcaf-policy/videos/real_world/throwing/ours.mp4" controls preload="metadata" playsInline className="w-full rounded-lg shadow-lg border-2 border-blue-200" />
+  </div>
+</div>
+
+<br/>
+
+### Task: UR7E Pick and Place (Position Generalization)
+
+The UR7E experiments use only a wrist-mounted camera for visual observation.
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div className="flex flex-col">
+    <h4 className="text-center font-semibold text-gray-700 mb-2">Diffusion Policy (DP)</h4>
+    <video src="/rcaf-policy/videos/real_world/ur7e_pick_place/dp_pick.mp4" controls preload="metadata" playsInline className="w-full rounded-lg shadow-sm border border-gray-200" />
+  </div>
+  <div className="flex flex-col">
+    <h4 className="text-center font-bold text-blue-600 mb-2">RCAF (Ours)</h4>
+    <video src="/rcaf-policy/videos/real_world/ur7e_pick_place/ours_pick.mp4" controls preload="metadata" playsInline className="w-full rounded-lg shadow-lg border-2 border-blue-200" />
+  </div>
+</div>
+
+<br/>
+
+### Task: UR7E Stacking Block
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div className="flex flex-col">
+    <h4 className="text-center font-semibold text-gray-700 mb-2">Diffusion Policy (DP)</h4>
+    <video src="/rcaf-policy/videos/real_world/ur7e_stacking_block/dp_stack.mp4" controls preload="metadata" playsInline className="w-full rounded-lg shadow-sm border border-gray-200" />
+  </div>
+  <div className="flex flex-col">
+    <h4 className="text-center font-bold text-blue-600 mb-2">RCAF (Ours)</h4>
+    <video src="/rcaf-policy/videos/real_world/ur7e_stacking_block/ours_stack.mp4" controls preload="metadata" playsInline className="w-full rounded-lg shadow-lg border-2 border-blue-200" />
+  </div>
+</div>
+
+<br/>
+
+
+
+
+<PairedVideoBenchmark
+  eyebrow="Paired Simulation Comparison"
+  title="RoboTwin 1.0"
+  description="Five manipulation tasks are shown as direct, task-matched comparisons between ManiFlow and RCAF. All results use image-based observations."
+  basePath="videos/robotwin1_comparison"
+  tasks={[
+    { slug: "diverse_bottles_pick", label: "Diverse Bottles Pick" },
+    { slug: "dual_bottles_pick_hard", label: "Dual Bottles Pick (Hard)" },
+    { slug: "empty_cup_place", label: "Empty Cup Place" },
+    { slug: "pick_apple_messy", label: "Pick Apple (Messy)" },
+    { slug: "shoe_place", label: "Shoe Place" },
+  ]}
+/>
+
+<PairedVideoBenchmark
+  eyebrow="Paired Simulation Comparison"
+  title="RoboTwin 2.0 — demo_random"
+  dataset="demo_random"
+  description="Results on the RoboTwin 2.0 demo_random subset are shown first. Nineteen tasks are arranged as direct, one-to-one comparisons between ManiFlow and RCAF."
+  basePath="videos/robotwin2_random_comparison"
+  tasks={[
+    { slug: "adjust_bottle", label: "Adjust Bottle" },
+    { slug: "beat_block_hammer", label: "Beat Block with Hammer" },
+    { slug: "click_alarmclock", label: "Click Alarm Clock" },
+    { slug: "click_bell", label: "Click Bell" },
+    { slug: "dump_bin_bigbin", label: "Dump Bin into Big Bin" },
+    { slug: "handover_block", label: "Handover Block" },
+    { slug: "lift_pot", label: "Lift Pot" },
+    { slug: "move_can_pot", label: "Move Can into Pot" },
+    { slug: "move_playingcard_away", label: "Move Playing Card Away" },
+    { slug: "open_laptop", label: "Open Laptop" },
+    { slug: "pick_diverse_bottles", label: "Pick Diverse Bottles" },
+    { slug: "pick_dual_bottles", label: "Pick Dual Bottles" },
+    { slug: "place_bread_basket", label: "Place Bread in Basket" },
+    { slug: "place_burger_fries", label: "Place Burger and Fries" },
+    { slug: "place_object_basket", label: "Place Object in Basket" },
+    { slug: "press_stapler", label: "Press Stapler" },
+    { slug: "put_object_cabinet", label: "Put Object in Cabinet" },
+    { slug: "stamp_seal", label: "Stamp Seal" },
+    { slug: "turn_switch", label: "Turn Switch" },
+  ]}
+/>
+
+<PairedVideoBenchmark
+  eyebrow="Paired Simulation Comparison"
+  title="RoboTwin 2.0 — demo_clean"
+  dataset="demo_clean"
+  description="Results on the RoboTwin 2.0 demo_clean subset are shown after demo_random. Each task uses the same paired ManiFlow-versus-RCAF layout."
+  basePath="videos/robotwin2_comparison"
+  tasks={[
+    { slug: "adjust_bottle", label: "Adjust Bottle" },
+    { slug: "beat_block_hammer", label: "Beat Block with Hammer" },
+    { slug: "click_alarmclock", label: "Click Alarm Clock" },
+    { slug: "click_bell", label: "Click Bell" },
+    { slug: "dump_bin_bigbin", label: "Dump Bin into Big Bin" },
+    { slug: "handover_block", label: "Handover Block" },
+    { slug: "lift_pot", label: "Lift Pot" },
+    { slug: "move_can_pot", label: "Move Can into Pot" },
+    { slug: "move_playingcard_away", label: "Move Playing Card Away" },
+    { slug: "pick_diverse_bottles", label: "Pick Diverse Bottles" },
+    { slug: "pick_dual_bottles", label: "Pick Dual Bottles" },
+    { slug: "place_bread_basket", label: "Place Bread in Basket" },
+    { slug: "place_burger_fries", label: "Place Burger and Fries" },
+    { slug: "press_stapler", label: "Press Stapler" },
+    { slug: "put_object_cabinet", label: "Put Object in Cabinet" },
+    { slug: "shake_bottle_horizontally", label: "Shake Bottle Horizontally" },
+    { slug: "stack_bowls_three", label: "Stack Three Bowls" },
+    { slug: "stamp_seal", label: "Stamp Seal" },
+    { slug: "turn_switch", label: "Turn Switch" },
+  ]}
+/>

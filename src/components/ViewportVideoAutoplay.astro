@@ -1,0 +1,64 @@
+<script>
+  const setupViewportAutoplay = () => {
+    const videos = Array.from(document.querySelectorAll<HTMLVideoElement>("video"));
+
+    if (videos.length === 0 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const play = (video: HTMLVideoElement) => {
+      const promise = video.play();
+      if (promise) promise.catch(() => {});
+    };
+
+    videos.forEach((video) => {
+      video.muted = true;
+      video.defaultMuted = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.setAttribute("muted", "");
+      video.setAttribute("loop", "");
+      video.setAttribute("playsinline", "");
+    });
+
+    if (!("IntersectionObserver" in window)) {
+      videos.slice(0, 2).forEach(play);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target as HTMLVideoElement;
+          const visible = entry.isIntersecting && entry.intersectionRatio >= 0.28;
+          video.dataset.inViewport = visible ? "true" : "false";
+
+          if (visible && !document.hidden) {
+            play(video);
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: [0, 0.28, 0.65], rootMargin: "80px 0px" },
+    );
+
+    videos.forEach((video) => observer.observe(video));
+
+    document.addEventListener("visibilitychange", () => {
+      videos.forEach((video) => {
+        if (document.hidden) {
+          video.pause();
+        } else if (video.dataset.inViewport === "true") {
+          play(video);
+        }
+      });
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupViewportAutoplay, { once: true });
+  } else {
+    setupViewportAutoplay();
+  }
+</script>

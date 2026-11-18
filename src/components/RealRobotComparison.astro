@@ -1,0 +1,360 @@
+---
+const baseUrl = import.meta.env.BASE_URL;
+const prefix = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+const asset = (path: string) => `${prefix}${path.replace(/^\/+/, "")}`;
+
+const conditionGroups = [
+  {
+    name: "Regular Setting",
+    tone: "regular",
+    description: "Matched ManiFlow and RCAF rollouts under the regular scene condition.",
+    comparisons: [
+      { title: "Regular Trial 1", baseline: "failure_04", ours: "trial_04" },
+      { title: "Regular Trial 2", baseline: "failure_03", ours: "trial_03" },
+      { title: "Regular Trial 3", baseline: "failure_02", ours: "trial_02" },
+    ],
+  },
+  {
+    name: "Occluded Setting",
+    tone: "occluded",
+    description: "Matched rollouts under the same occluded observation condition.",
+    comparisons: [
+      { title: "Occlusion Trial 1", baseline: "failure_01", ours: "trial_01" },
+    ],
+  },
+];
+
+---
+
+<section class="real-comparison full-bleed not-prose" aria-labelledby="real-comparison-title">
+  <div class="section-shell">
+    <header class="section-heading">
+      <span class="eyebrow">Real-Robot Evaluation</span>
+      <h2 id="real-comparison-title">Condition-Matched Comparison with ManiFlow</h2>
+      <div class="task-name" aria-label="Real-robot task: Insert USB">
+        <span>Task</span>
+        <strong>Insert USB</strong>
+      </div>
+    </header>
+
+    <div class="condition-stack">
+      {conditionGroups.map((group, groupIndex) => (
+        <section class:list={["condition-group", group.tone]} aria-label={group.name}>
+          <header class="condition-heading">
+            <span class="condition-number">Condition {String(groupIndex + 1).padStart(2, "0")}</span>
+            <div>
+              <h3>{group.name}</h3>
+              <p>{group.description}</p>
+            </div>
+          </header>
+
+          <div class="comparison-list">
+            {group.comparisons.map((comparison, comparisonIndex) => (
+              <article class="comparison-card">
+                <header class="comparison-heading">
+                  <span>Pair {comparisonIndex + 1}</span>
+                  <h4>{comparison.title}</h4>
+                </header>
+
+                <div class="pair-grid">
+                  <figure class="method-column baseline-column">
+                    <div class="method-label">
+                      <div>
+                        <span class="method-kicker">Baseline · 1 NFE</span>
+                        <strong>ManiFlow</strong>
+                      </div>
+                      <span class="outcome failure-outcome">Failure</span>
+                    </div>
+                    <video
+                      src={asset(`videos/real_robot_comparison/maniflow/${comparison.baseline}.mp4`)}
+                      poster={asset(`videos/real_robot_comparison/maniflow/${comparison.baseline}.jpg`)}
+                      controls
+                      preload="metadata"
+                      playsinline
+                      aria-label={`${comparison.title}, ManiFlow failure`}
+                    />
+                  </figure>
+
+                  <figure class="method-column ours-column">
+                    <div class="method-label ours-label">
+                      <div>
+                        <span class="method-kicker ours-kicker">Ours · 1 NFE</span>
+                        <strong>RCAF</strong>
+                      </div>
+                      <span class="outcome success-outcome">Success</span>
+                    </div>
+                    <video
+                      src={asset(`videos/real_robot_comparison/rcaf/${comparison.ours}.mp4`)}
+                      poster={asset(`videos/real_robot_comparison/rcaf/${comparison.ours}.jpg`)}
+                      controls
+                      preload="metadata"
+                      playsinline
+                      aria-label={`${comparison.title}, RCAF success`}
+                    />
+                  </figure>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .real-comparison {
+    margin-block: 3.5rem 4rem;
+    color: var(--foreground);
+  }
+
+  .section-shell {
+    width: min(86rem, calc(100% - 2rem));
+    margin-inline: auto;
+  }
+
+  .section-heading {
+    max-width: 48rem;
+    margin: 0 auto 1.8rem;
+    text-align: center;
+  }
+
+  .eyebrow,
+  .method-kicker,
+  .condition-number {
+    display: block;
+    color: #64748b;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.105em;
+    text-transform: uppercase;
+  }
+
+  .section-heading h2 {
+    margin: 0.35rem 0 0.65rem;
+    font-size: clamp(1.65rem, 4vw, 2.2rem);
+    line-height: 1.15;
+  }
+
+  .task-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 0.75rem;
+    padding: 0.45rem 0.75rem;
+    border: 1px solid rgb(37 99 235 / 0.2);
+    border-radius: 999px;
+    color: #1e3a8a;
+    background: rgb(239 246 255 / 0.9);
+  }
+
+  .task-name span {
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .task-name strong {
+    font-size: 0.9rem;
+  }
+
+  .condition-stack {
+    display: grid;
+    gap: 1.35rem;
+    max-width: 80rem;
+    margin-inline: auto;
+  }
+
+  .condition-group {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 1.1rem;
+    background: var(--card);
+    box-shadow: 0 14px 38px rgb(15 23 42 / 0.075);
+  }
+
+  .condition-group.occluded {
+    border-color: rgb(245 158 11 / 0.35);
+  }
+
+  .condition-heading {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.15rem;
+    border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, #dbeafe 52%, var(--card));
+  }
+
+  .occluded .condition-heading {
+    background: color-mix(in srgb, #fef3c7 58%, var(--card));
+  }
+
+  .condition-number {
+    flex: 0 0 auto;
+    padding: 0.38rem 0.55rem;
+    border-radius: 0.55rem;
+    color: #1d4ed8;
+    background: rgb(255 255 255 / 0.72);
+  }
+
+  .occluded .condition-number {
+    color: #b45309;
+  }
+
+  .condition-heading h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    line-height: 1.2;
+  }
+
+  .condition-heading p {
+    margin: 0.2rem 0 0;
+    color: var(--muted-foreground);
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+
+  .comparison-list {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .comparison-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 0.9rem;
+    background: var(--card);
+  }
+
+  .comparison-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, var(--muted) 68%, transparent);
+  }
+
+  .comparison-heading span {
+    padding: 0.25rem 0.42rem;
+    border-radius: 0.4rem;
+    color: #475569;
+    background: var(--card);
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .comparison-heading h4 {
+    margin: 0;
+    font-size: 0.92rem;
+  }
+
+  .pair-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .method-column {
+    min-width: 0;
+    margin: 0;
+    background: var(--card);
+  }
+
+  .method-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.55rem;
+    min-height: 3.65rem;
+    padding: 0.65rem 0.75rem;
+    background: #f8fafc;
+  }
+
+  .ours-label {
+    background: #eff6ff;
+  }
+
+  .method-label strong {
+    display: block;
+    margin-top: 0.12rem;
+    color: #334155;
+    font-size: 0.93rem;
+  }
+
+  .ours-label strong,
+  .ours-kicker {
+    color: #1d4ed8;
+  }
+
+  .outcome {
+    flex: 0 0 auto;
+    padding: 0.3rem 0.48rem;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 800;
+  }
+
+  .failure-outcome {
+    color: #9f1239;
+    background: #ffe4e6;
+  }
+
+  .success-outcome {
+    color: #166534;
+    background: #dcfce7;
+  }
+
+  .method-column video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    margin: 0;
+    background: #0f172a;
+    object-fit: contain;
+  }
+
+
+  @media (min-width: 72rem) {
+    .comparison-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .comparison-card:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+      width: calc(50% - 0.5rem);
+      justify-self: center;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .real-comparison {
+      margin-block: 2.75rem 3rem;
+    }
+
+    .condition-heading {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .comparison-list {
+      gap: 0.7rem;
+      padding: 0.65rem;
+    }
+
+    .method-label {
+      align-items: flex-start;
+      flex-direction: column;
+      min-height: 5.4rem;
+    }
+
+  }
+</style>
